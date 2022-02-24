@@ -1,0 +1,388 @@
+openapi: 3.0.0
+info:
+  version: v.2.0.2
+  title: HW12 API Бронирования
+  description: 'API Бронирования сервиса "Броник"'
+
+paths:
+
+  /bookings/active/:
+    parameters:
+      - $ref: '#/components/parameters/offsetParam'
+      - $ref: '#/components/parameters/limitParam'
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/userId'
+    get:
+      summary: UC-6. Просмотр активных бронирований
+      description: Получение списка активных бронирований текущего пользователя с постраничной навигацией.
+      tags:
+        - Просмотр бронирований
+      operationId: getBookingsActive
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Booking"
+        "404":
+          description: Не найдено ни одного бронирования
+        "500":
+          description: Что-то пошло не так...
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  
+  /bookings/{id}/:
+    parameters:
+      - $ref: "#/components/parameters/id"
+      
+    get:
+      summary: UC-8. Просмотр деталей бронирования по ID
+      description: Получить подробную информацию об указанном бронировании.
+      tags:
+        - Просмотр бронирований
+      operationId: getBookingById
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingDetails"
+        "401":
+          description: Неавторизованный запрос. Отказано в доступе.
+        "404":
+          description: Запрашиваемое бронирование не найдено 
+        "500":
+          description: Что-то пошло не так, ошибка на нашей стороне.
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"  
+  
+  /bookings/history/:
+    parameters:
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/offsetParam'
+      - $ref: '#/components/parameters/limitParam'
+      - $ref: '#/components/parameters/sortParam'
+      - $ref: '#/components/parameters/status'
+    get:
+      summary:  UC-7 Просмотр истории бронирований
+      description: Получение списка бронирований пользователя для просмотра истории бронирований.
+      tags:
+        - История бронирования
+      operationId: getBookings
+      responses:
+        
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+        
+        "401":
+          description: Неавторизованный запрос. Отказано в доступе.
+        
+        "406":
+          description: Истории пока нет
+        
+        "500":
+          description: Что-то пошло не так, ошибка на нашей стороне.
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+ 
+ 
+  /bookings/:
+    post:
+      summary: UC-9. Повтор бронирования по ID
+      description: Повторить бронирование.
+      tags:
+        - Бронирование стола
+      operationId: repeatBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingDetails"
+        "406":
+          description: Указанный стол занят
+        "404":
+          description: Бронирование с укзанным id не найдено
+        "500":
+          description: Что-то пошло не так, ошибка на нашей стороне.
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  
+components:
+
+  parameters:
+  
+    id:
+      description: Уникальный ID бронирования
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    offsetParam:
+      description: Номер первого элемента на странице
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    limitParam:
+      description: Количество элементов на странице
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+        default: 20
+    sort:
+      description: Порядок сортировки
+      name: sort
+      in: query
+      required: false    
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+    status:
+      description: Выборка по статусу бронирования (активно/неактивно/все)
+      name: status
+      in: query
+      required: false    
+      schema:
+        type: string
+        enum:
+          - active
+          - inactive
+          - all
+        default: active
+    statusActive:
+      description: Выборка по активному статусу бронирования
+      name: status
+      in: query
+      required: true    
+      schema:
+        type: string
+        default: active
+ 
+    userId:
+      description: Уникальный ID пользователя
+      name: userId
+      in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    restrantId:
+      description: Уникальный ID ресторана
+      name: restrantId
+      in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1        
+    sortParam:
+      description: Направление сортировки
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: 
+          - asc
+          - desc
+        default: asc
+     
+      
+  schemas:
+  
+    Booking:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+          nullable: false
+          minimum: 1
+          description: ID бронирования
+        restrantId:
+          type: integer
+          format: int64
+          nullable: false
+          minimum: 1
+          description: ID ресторана
+        userId:
+          type: integer
+          format: int64
+          nullable: false
+          minimum: 1
+          description: ID клиента ресторана-пользователя    
+        description:
+          type: string
+          nullable: false
+          maxLength: 500
+          default: blank
+          description: Краткое описание бронирования
+        status:
+         type: string
+         nullable: false
+         description: Статус бронирования (активное/неактивное)
+         enum:
+            - active
+            - inactive
+        guestCount:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Кол-во гостей            
+    
+    BookingDetails:
+      description: Подробная информация о бронировании
+      allOf:
+        - $ref: '#/components/schemas/Booking'
+        - type: object
+          required:
+            - tableId
+            - dateTime
+            - phone
+            - status
+            - userId
+          properties:
+            tableId:
+              type: integer
+              format: int64
+              minimum: 1
+              nullable: false
+              description: Уникальный ID стола
+            dateTime:
+              type: string
+              format: date-time
+              nullable: false
+              description: Дата и время бронирования
+            phone:
+              type: string
+              pattern: '^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$'
+              nullable: false
+              description: Контактный телефон клиента ресторана
+            status:
+              type: string
+              nullable: false
+              description: Статус бронирования (активное/неактивное)
+              enum:
+                - active
+                - inactive
+            userId:
+              type: integer
+              format: int64
+              minimum: 1
+              nullable: false
+              description: Уникальный ID пользователя
+            guestCount:
+              type: integer
+              format: int64
+              minimum: 1
+              nullable: false
+              description: Кол-во гостей              
+    
+    BookingRequest:
+      type: object
+      required:
+        - id
+        - dateAndTime
+      properties:
+        restrantId:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: ID бронирования
+        userId:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: ID бронирования          
+        dateAndTime:
+          type: string
+          nullable: false
+          description: Дата и время бронирования
+        description:
+          type: string
+          nullable: false
+          maxLength: 500
+          default: blank
+          description: Краткое описание бронирования
+        tableId:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Уникальный ID стола
+        guestCount:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Кол-во гостей  
+        
+    ErrorMessage:
+      type: object
+      required:
+        - id
+        - en
+        - ru
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Уникальный ID ошибки для поддержки приложения
+        en:
+          type: string
+          nullable: false
+          description: Текст сообщения об ошибке на английском
+        ru:
+          type: string
+          nullable: false
+          description: Текст сообщения об ошибке на русском
+  
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/otustest/OTUS_HW/2.0.1
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/r9512/Home_work/2.1
