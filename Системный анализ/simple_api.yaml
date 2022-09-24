@@ -1,0 +1,123 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  license: 
+    name: SomeLicense
+  title: "Sample API"
+  description: "Здесь может быть произвольное описание API"
+  termsOfService: "http://archways.ru/webservices"
+  contact:
+    name: "IntegrationCourse API"
+    url: "https://archways.ru/api"
+    email: "some_email@gmail.com"
+
+servers:
+  - url: https://archways.ru/api/2.5/
+    description: Production server
+  - url: https://archways.ru/api/2.5/
+    description: Beta server
+  - url: https://archways.ru/api/2.5/
+    description: Some other server
+
+paths:
+  /students:
+    get:
+      description: Получение списка студентов
+      summary: Список студентов
+      parameters:
+        - name: firstname
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyObjects'
+        
+  /students/{id}:
+    put:
+      description: Обновление данных студента
+      summary: Обновить студента
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: app-id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyObjects'  
+              
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyObjects'  
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MyObjects'  
+            application/text:
+              schema:
+                $ref: '#/components/schemas/MyObjects'  
+        '201':
+          description: "Created"
+
+    get:
+      description: Запрос данных студента
+      summary: Получить данные студента
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: app-id
+          in: header
+          required: true
+          schema:
+            type: string
+              
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyObjects'  
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MyObjects'  
+            application/text:
+              schema:
+                $ref: '#/components/schemas/MyObjects'  
+
+  /courses:
+    get:
+      description: Получение списка курсов
+      summary: Список курсов
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyObjects'
+
+components:
+  schemas:
+  
+    MyObjects:
+      type: integer
