@@ -1,0 +1,379 @@
+openapi: 3.0.0
+info:
+  version: v.1.0.0
+  title: API Training Service
+  description: 'API сервиса заявок на обучение'
+
+paths:
+
+  /statements/{id}/:
+    parameters:
+      - $ref: "#/components/parameters/id"
+      
+    get:
+      summary: Просмотр деталей заявки по ID
+      description: Получить подробную информацию об указанном заявке на обучение.
+      tags:
+        - Просмотр заявки
+      operationId: getStatementById
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatementDetails"
+        "401":
+          description: Неавторизованный запрос. Отказано в доступе.
+        "404":
+          description: Запрошенная заявка не найдена 
+        "500":
+          description: Что-то пошло не так, ошибка на нашей стороне.
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"  
+  
+    put:
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatementRequest"
+      tags:
+        -  Обновление заявки
+      operationId: updateStatementById
+      summary: Обновление заявки по ID
+      responses:
+            "200":
+              description: "OK"
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/StatementDetails"
+            "401":
+              description: Неавторизованный запрос. Отказано в доступе.
+            "404":
+              description: Запрошенная заявка не найдена
+            "500":
+              description: Что-то пошло не так, ошибка на нашей стороне.
+              content:
+                json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorMessage"  
+ 
+  /statements/:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/offsetParam'
+      - $ref: '#/components/parameters/limitParam'
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/status'
+      - $ref: '#/components/parameters/number'      
+      summary: Просмотр всех заявок  / поиск заявки по статусу и/или номеру
+      description: Получение списка заявок с постраничной навигацией.
+      tags:
+        - Просмотр заявок
+      operationId: getStatements
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Statement"
+        "404":
+          description: Не найдено ни одной звявки
+        "500":
+          description: Что-то пошло не так...
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+ 
+    post:
+      parameters:
+      - $ref: '#/components/parameters/userId'
+      summary: Создание заявки на обучение
+      description: Создание заявки на обучение
+      tags:
+        - Создание заявки
+      operationId: createStatement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatementRequest'
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/statementId"
+        "406":
+          description: Заявка с указанным id курса существует
+        "404":
+          description: Ошибка в параметрах заявки
+        "500":
+          description: Что-то пошло не так, ошибка на нашей стороне.
+          content:
+            json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  
+components:
+
+  parameters:
+    dateTime:
+      description: Поиск заявки по id заявки
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer    
+    id:
+      description: Поиск заявки по id заявки
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer  
+    number:
+      description: Поиск заявки по номеру
+      name: number
+      in: query
+      required: false
+      schema:
+        type: integer
+    offsetParam:
+      description: Номер первого элемента на странице
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    limitParam:
+      description: Количество элементов на странице
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+        default: 20
+    sort:
+      description: Порядок сортировки
+      name: sort
+      in: query
+      required: false    
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+    status:
+      description: Выборка по статусу заявки (новая/согласованная/все/отклоненная)
+      name: status
+      in: query
+      required: false    
+      schema:
+        type: string
+        enum:
+          - new
+          - approved
+          - all
+          - rejected
+        default: all
+ 
+    userId:
+      description: Уникальный ID пользователя (обязательный для возможного разделения по правам доступа к заявкам)
+      name: userId
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    sortParam:
+      description: Направление сортировки
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: 
+          - asc
+          - desc
+        default: asc
+     
+  schemas:
+  
+    statementId:
+      type: integer
+      format: int64
+      nullable: false
+      minimum: 1
+      description: ID заявки на обучение
+    
+  
+    Statement:
+      type: object
+      required:
+        - id
+      properties:
+        statementId:
+          type: integer
+          format: int64
+          nullable: false
+          minimum: 1
+          description: ID заявки на обучение
+        userId:
+          type: integer
+          format: int64
+          nullable: false
+          minimum: 1
+          description: ID пользователя создавшего заявку  
+        description:
+          type: string
+          nullable: false
+          maxLength: 500
+          default: blank
+          description: Краткое описание заявки на обучение
+        status:
+         type: string
+         nullable: false
+         description: Статус заявки (новая/согласованная/все/отклоненная)
+         enum:
+          - new
+          - approved
+          - all
+          - rejected
+    
+    StatementDetails:
+      description: Подробная информация о заявке на обучение
+      allOf:
+        - $ref: '#/components/schemas/Statement'
+        - type: object
+          required:
+            - statementId
+            - dateTime
+            - phone
+            - status
+            - userId
+          properties:
+            dateTime:
+              type: string
+              format: date-time
+              nullable: false
+              description: Дата и время создания заявки
+            phone:
+              type: string
+              pattern: '^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$'
+              nullable: false
+              description: Контактный телефон автора заявки
+            fullDescription:
+              type: string
+              nullable: false
+              maxLength: 500
+              default: blank
+              description: Подробное описание заявки на обучение              
+            cost:
+              type: integer
+              format: int64
+              minimum: 1
+              nullable: false
+              description: Стоимость заявки
+            duration:
+              type: integer
+              format: int64
+              minimum: 1
+              nullable: false
+              description: Продолжительность обучения
+  
+    StatementRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        courseId:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: ID курса обучения
+        courseName:
+          type: string
+          nullable: false
+          description: Название курса обучения
+        userId:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: ID пользователя, создавшего заявку          
+        dateAndTime:
+          type: string
+          nullable: false
+          description: Дата и время создания заявки на обучение
+        description:
+          type: string
+          nullable: false
+          maxLength: 500
+          default: blank
+          description: Краткое описание заявки на обучение
+        cost:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Стоимость заявки
+        duration:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Продолжительность обучения
+        fullDescription:
+          type: string
+          nullable: false
+          maxLength: 500
+          default: blank
+          description: Подробное описание заявки на обучение     
+        
+    ErrorMessage:
+      type: object
+      required:
+        - id
+        - en
+        - ru
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: false
+          description: Уникальный ID ошибки для поддержки приложения
+        en:
+          type: string
+          nullable: false
+          description: Текст сообщения об ошибке на английском
+        ru:
+          type: string
+          nullable: false
+          description: Текст сообщения об ошибке на русском
+  
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/archways/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/archways/1.0.0
