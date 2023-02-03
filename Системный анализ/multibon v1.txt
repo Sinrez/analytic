@@ -1,0 +1,73 @@
+title Multibonus System: pay spec offer, only positive cases
+
+actor Пользователь
+participant "Программный\nклиент\n(Mobile/PC)" as dev
+
+boundary ApiGateway
+participant "Модуль Баллы" as mb
+participant Brocker
+participant "Модуль\nСпецпредложений" as ms
+
+Пользователь->dev:Запрос \nспецпредложений
+activate Пользователь
+activate dev
+dev->ApiGateway:Запрос (обновление) \nбаланса бонусов
+activate ApiGateway
+
+ApiGateway->mb:Get /balance
+activate mb
+ApiGateway<--mb:responce\n(balance)
+deactivate mb
+dev<--ApiGateway:Баланс бонусов
+deactivate ApiGateway
+dev->ApiGateway:Запрос списка \nактивных \nспецпредложений:\n(user_id, balance)
+activate ApiGateway
+ApiGateway->ms:GET /offer\n(user_id, balance)
+activate ms
+ApiGateway<--ms:response\n(offers)
+deactivate ms
+dev<--ApiGateway:Список\nспецпредложений
+deactivate ApiGateway
+Пользователь<--dev:Отображение доступных\nспецпредложений
+Пользователь ->dev: Выбор спецпредложения
+dev->ApiGateway:Запрос покупки\nспецпредложения за\nбонусы
+activate ApiGateway
+ApiGateway->ms:POST /Offer
+activate ms
+ms->ms:Создание заказа\nв статусе Penfing
+ApiGateway<--ms:response\n(wait)
+dev<--ApiGateway:Ответ:\nожидайте обработки\nпокупки
+deactivate ApiGateway
+Пользователь<--dev:Оповещение\nоб обработке покупки
+deactivate dev
+Brocker<-ms:event:\nnew offer
+deactivate ms
+activate Brocker
+mb<<-Brocker:event:\nnew offer
+activate mb
+mb->mb:Проверка баланса
+mb->Brocker:Результат\nпроверки баланса
+Brocker->>ms:event:\nresult check \nbalance
+activate ms
+mb->mb:Резервирование\nсуммы баллов,\nесли баллов хватает\nдля покупки
+Brocker<-ms:event:\nbuy offer
+mb<<-Brocker:event:\nbuy offer
+mb->mb:Списание баллов
+mb->Brocker:event:\nСписание баллов
+deactivate mb
+Brocker->ms:event: \nСписание баллов
+ms->ms:Оформление \nспецпредложения
+ApiGateway<<-Brocker:callBack: Уведомление\nо балансе баллов
+activate ApiGateway
+dev<<-ApiGateway:Уведомление\nо списании баллов
+activate dev
+Пользователь<<-dev:Баллы списаны
+Brocker<-ms:Спецпредложение\nкуплено
+deactivate ms
+ApiGateway<-Brocker:callBack: \nспецпредложения куплено
+deactivate Brocker
+dev<-ApiGateway:Спецпредложение \nкуплено
+deactivate ApiGateway
+Пользователь<-dev:Оповещение о покупке\nспецпредложения
+deactivate dev
+deactivate Пользователь
