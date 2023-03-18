@@ -357,6 +357,8 @@
 -- group by DATEPART(month, OrderDate), EmployeeID
 -- order by count(OrderID) desc
 
+
+
 -- Выведите заказы, которые были оформлены в 1997 году. 
 -- С помощью CASE добавьте временный столбец. 
 -- Если дата фактической доставки (ShippedDate) больше запланированной даты доставки (RequiredDate), 
