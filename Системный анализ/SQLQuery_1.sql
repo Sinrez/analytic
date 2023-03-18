@@ -1,6 +1,5 @@
 -- Задачи по курсу https://stepik.org/course/102883/syllabus
 
--- SELECT * from [Order Details]
 -- select * from Products where ProductName not in ('Tofu','Konbu','Chang')
 
 -- select *
