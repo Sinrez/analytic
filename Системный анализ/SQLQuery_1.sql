@@ -85,9 +85,6 @@
 -- GROUP BY ContactTitle
 -- ORDER by COUNT(*) Desc
 
--- select *
--- from Customers
-
 -- Найдите заказ (OrderID) с самым большим количеством штук (Quantity) товаров в чеке. 
 -- Если в заказе несколько разных товаров, то штуки нужно сложить. Какой OrderID у заказа?
 
