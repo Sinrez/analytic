@@ -17,10 +17,6 @@
 
 -- select * 
 -- from Customers 
--- WHERE Country = 'Spain'
-
--- select * 
--- from Customers 
 -- WHERE City like ('W%')
 
 -- select * 
