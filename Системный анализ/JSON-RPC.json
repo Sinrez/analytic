@@ -1,0 +1,236 @@
+{
+  "openrpc": "1.2.6",
+  "info": {
+    "title": "Book Entity JSON-RPC API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "author"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      }
+    }
+  },
+  "methods": [
+    {
+      "name": "addBook",
+      "params": [
+        {
+          "name": "token",
+          "schema": {
+            "type": "string"
+          },
+          "description": "Authentication token"
+        },
+        {
+          "name": "book",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "author"
+            ]
+          }
+        }
+      ],
+      "result": {
+        "name": "book",
+        "schema": {
+          "$ref": "#/components/schemas/Book"
+        }
+      },
+      "errors": [
+        {
+          "code": -32602,
+          "message": "Invalid params",
+          "data": "Invalid book object provided."
+        },
+        {
+          "code": -32000,
+          "message": "Authentication failed",
+          "data": "Invalid token provided."
+        }
+      ]
+    },
+    {
+      "name": "getBook",
+      "params": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "result": {
+        "name": "book",
+        "schema": {
+          "$ref": "#/components/schemas/Book"
+        }
+      },
+      "errors": [
+        {
+          "code": -32602,
+          "message": "Invalid params",
+          "data": "Invalid book ID provided."
+        },
+        {
+          "code": -32000,
+          "message": "Book not found",
+          "data": "A book with the provided ID does not exist."
+        }
+      ]
+    },
+    {
+      "name": "updateBook",
+      "params": [
+        {
+          "name": "token",
+          "schema": {
+            "type": "string"
+          },
+          "description": "Authentication token"
+        },
+        {
+          "name": "id",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "book",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ],
+      "result": {
+        "name": "success",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "errors": [
+        {
+          "code": -32602,
+          "message": "Invalid params",
+          "data": "Invalid book object or ID provided."
+        },
+        {
+          "code": -32000,
+          "message": "Authentication failed",
+          "data": "Invalid token provided."
+        },
+        {
+          "code": -32001,
+          "message": "Book not found",
+          "data": "A book with the provided ID does not exist."
+        }
+      ]
+    },
+    {
+      "name": "deleteBook",
+      "params": [
+        {
+          "name": "token",
+          "schema": {
+            "type": "string"
+          },
+          "description": "Authentication token"
+        },
+        {
+          "name": "id",
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "result": {
+        "name": "success",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "errors": [
+        {
+          "code": -32602,
+          "message": "Invalid params",
+          "data": "Invalid book ID provided."
+        },
+        {
+          "code": -32000,
+          "message": "Authentication failed",
+          "data": "Invalid token provided."
+        },
+        {
+          "code": -32001,
+          "message": "Book not found",
+          "data": "A book with the provided ID does not exist."
+        }
+      ]
+    },
+    {
+      "name": "listBooks",
+      "params": [],
+      "result": {
+        "name": "books",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Book"
+          }
+        }
+      }
+    }
+  ]
+}
