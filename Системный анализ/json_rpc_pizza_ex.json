@@ -1,0 +1,73 @@
+{
+  "openrpc": "1.2.1",
+  "info": {
+    "version": "1.0.0",
+    "title": "Panco restr MVP",
+    "description": "This API lets you interact with an EVM-based client via JSON-RPC",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+    "servers": [{
+        "url": "http://api.restatauntpanco.com/json-rpc"
+    }],
+    "methods": [{
+        "name": "get_pizza",
+        "summary": "Order pizza",
+        "params": [{
+            "name": "name",
+            "description": "Pizza name",
+            "required": true,
+            "schema": {
+                "type": "string"
+            }
+        }, {
+            "name": "count",
+            "description": "Number of pizzas",
+            "required": true,
+            "schema": {
+                "type": "integer",
+                "minimum": 1
+            }
+        }],
+        "result": {
+            "name": "status",
+            "description": "Order status",
+            "schema": {
+                "title": "status_code",
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "errors": [{
+            "code": -32601,
+            "message": "Method not found"
+        }],
+        "examples": [{
+            "name": "orderExample",
+            "description": "Example of order request",
+            "params": [{
+                "name": "name",
+                "value": "Пицца большая"
+            }, {
+                "name": "count",
+                "value": 2
+            }],
+            "result": {
+                "name": "orderResultExample",
+                "value": [{
+                    "status": "success",
+                    "order_id": 123456
+                }]
+            }
+        }]
+    }]
+}
