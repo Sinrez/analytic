@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="http://example.com/authorapi"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                  targetNamespace="http://example.com/authorapi">
+
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://example.com/authorapi">
+      <xsd:element name="Author">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:int"/>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="birthDate" type="xsd:date"/>
+            <xsd:element name="nationality" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      
+      <xsd:element name="ApiError">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="code" type="xsd:int"/>
+            <xsd:element name="message" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+
+
+  <wsdl:message name="AddAuthorRequest">
+    <wsdl:part name="token" type="xsd:string"/>
+<wsdl:part name="author" element="tns:Author"/>
+</wsdl:message>
+<wsdl:message name="AddAuthorResponse">
+<wsdl:part name="author" element="tns:Author"/>
+</wsdl:message>
+<wsdl:message name="AddAuthorFault">
+<wsdl:part name="error" element="tns:ApiError"/>
+</wsdl:message>
+
+<wsdl:message name="GetAuthorRequest">
+<wsdl:part name="id" type="xsd:int"/>
+</wsdl:message>
+<wsdl:message name="GetAuthorResponse">
+<wsdl:part name="author" element="tns:Author"/>
+</wsdl:message>
+<wsdl:message name="GetAuthorFault">
+<wsdl:part name="error" element="tns:ApiError"/>
+</wsdl:message>
+
+<wsdl:message name="UpdateAuthorRequest">
+<wsdl:part name="token" type="xsd:string"/>
+<wsdl:part name="id" type="xsd:int"/>
+<wsdl:part name="author" element="tns:Author"/>
+</wsdl:message>
+<wsdl:message name="UpdateAuthorResponse">
+<wsdl:part name="success" type="xsd:boolean"/>
+</wsdl:message>
+<wsdl:message name="UpdateAuthorFault">
+<wsdl:part name="error" element="tns:ApiError"/>
+</wsdl:message>
+
+<wsdl:message name="DeleteAuthorRequest">
+<wsdl:part name="token" type="xsd:string"/>
+<wsdl:part name="id" type="xsd:int"/>
+</wsdl:message>
+<wsdl:message name="DeleteAuthorResponse">
+<wsdl:part name="success" type="xsd:boolean"/>
+</wsdl:message>
+<wsdl:message name="DeleteAuthorFault">
+<wsdl:part name="error" element="tns:ApiError"/>
+</wsdl:message>
+
+<wsdl:message name="ListAuthorsResponse">
+<wsdl:part name="authors" type="soapenc:Array"/>
+</wsdl:message>
+
+
+<wsdl:portType name="AuthorService">
+<wsdl:operation name="addAuthor">
+<wsdl:input message="tns:AddAuthorRequest"/>
+<wsdl:output message="tns:AddAuthorResponse"/>
+<wsdl:fault name="ApiErrorFault" message="tns:AddAuthorFault"/>
+</wsdl:operation>
+<wsdl:operation name="getAuthor">
+<wsdl:input message="tns:GetAuthorRequest"/>
+<wsdl:output message="tns:GetAuthorResponse"/>
+<wsdl:fault name="ApiErrorFault" message="tns:GetAuthorFault"/>
+</wsdl:operation>
+<wsdl:operation name="updateAuthor">
+<wsdl:input message="tns:UpdateAuthorRequest"/>
+<wsdl:output message="tns:UpdateAuthorResponse"/>
+<wsdl:fault name="ApiErrorFault" message="tns:UpdateAuthorFault"/>
+</wsdl:operation>
+<wsdl:operation name="deleteAuthor">
+<wsdl:input message="tns:DeleteAuthorRequest"/>
+<wsdl:output message="tns:DeleteAuthorResponse"/>
+<wsdl:fault name="ApiErrorFault" message="tns:DeleteAuthorFault"/>
+</wsdl:operation>
+<wsdl:operation name="listAuthors">
+<wsdl:output message="tns:ListAuthorsResponse"/>
+</wsdl:operation>
+</wsdl:portType>
+
+
+<wsdl:binding name="AuthorServiceSoapBinding" type="tns:AuthorService">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="addAuthor">
+<soap:operation soapAction="http://example.com/authorapi/addAuthor"/>
+<wsdl:input>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:output>
+<wsdl:fault name="ApiErrorFault">
+<soap:fault name="ApiErrorFault" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="getAuthor">
+<soap:operation soapAction="http://example.com/authorapi/getAuthor"/>
+<wsdl:input>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:output>
+<wsdl:fault name="ApiErrorFault">
+<soap:fault name="ApiErrorFault" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="updateAuthor">
+<soap:operation soapAction="http://example.com/authorapi/updateAuthor"/>
+<wsdl:input>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:output>
+<wsdl:fault name="ApiErrorFault">
+<soap:fault name="ApiErrorFault" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="deleteAuthor">
+<soap:operation soapAction="http://example.com/authorapi/deleteAuthor"/>
+<wsdl:input>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:output>
+<wsdl:fault name="ApiErrorFault">
+<soap:fault name="ApiErrorFault" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="listAuthors">
+<soap:operation soapAction="http://example.com/authorapi/listAuthors"/>
+<wsdl:output>
+<soap:body use="encoded" namespace="http://example.com/authorapi" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</wsdl:output>
+</wsdl:operation>
+</wsdl:binding>
+
+
+<wsdl:service name="AuthorService">
+<wsdl:port name="AuthorServicePort" binding="tns:AuthorServiceSoapBinding">
+<soap:address location="http://example.com/authorapi"/>
+</wsdl:port>
+</wsdl:service>
+
+</wsdl:definitions>
