@@ -1,0 +1,22 @@
+type Publisher {
+  id: ID!
+  name: String!
+  country: String!
+  established: Int!
+}
+
+type Query {
+  publisher(id: ID!): Publisher
+  publishers: [Publisher!]!
+}
+
+type Mutation {
+  addPublisher(token: String!, name: String!, country: String!, established: Int!): Publisher!
+  updatePublisher(token: String!, id: ID!, name: String!, country: String!, established: Int!): Boolean!
+  deletePublisher(token: String!, id: ID!): Boolean!
+}
+
+type Error {
+  code: Int!
+  message: String!
+}
