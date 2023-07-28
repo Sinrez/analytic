@@ -1,0 +1,80 @@
+Создание нового проекта, idmp_id - супер-идентификатор для идемпотентности:
+POST api/v1/projects
+
+{
+    "name": "Matrix",
+    "description": "Follow the White Rabbit"
+    "idmp_id": 61f0c404-5cb3-11e7-907b-a6006ad3dba0
+}
+
+Добавить в проект нового участника:
+POST api/v1/projects/{id}/members
+
+{
+    "fname": "John",
+    "lname": "Smith",
+    "position": "Agent"
+    "idmp_id": 61f0c777-5cb3-11e7-907b-a6006ad3dba7
+}
+
+Создать новую задачу в проекте:
+POST api/v1/projects/{id}/tasks
+
+{
+    "name": "Matrix API design",
+    "description": "Task for Agent",
+    "member_id": 100500,
+    "idmp_id": 61f0cе77-5cb3-11e7-907b-a6006ad3d999
+    "status": "New"
+}
+
+
+Обновить название или описание существующего проекта:
+PATCH api/v1/projects/{id}
+
+{
+    "name": "Project for Matrix 2"
+}
+
+Обновить роли участника:
+PATCH api/v1/projects/{id}/members/{id}
+
+{
+    "role": "Architect"
+}
+
+
+Обновить название, описание, назначенного члена команды или статус задачи в проекте:
+PATCH api/v1/projects/{id}/tasks/{id}
+
+{
+    "status": "Progress"
+}
+
+PATCH api/v1/projects/{id}/tasks/{id}
+
+{
+    "member_id": 75759
+}
+
+PATCH api/v1/projects/{id}/tasks/{id}
+
+{
+    "name": "Matrix 2 API design"
+}
+
+
+Удалить члена команды из проекта:
+DELETE api/v1/projects/{id}/members/{id}
+
+Удалить задачу в проекте:
+DELETE api/v1/projects/{id}/tasks/{id}
+
+Удалить проект
+DELETE api/v1/projects/{id}
+
+Получить отдельный проект со всеми его задачами и членами команды по его ID
+GET api/v1/projects/{id}
+
+Получить список всех проектов, включая их задачи и членов команды
+GET api/v1/projects
