@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package categoryapi;
+
+service CategoryService {
+  rpc AddCategory(AddCategoryRequest) returns (Category) {}
+  rpc GetCategory(GetCategoryRequest) returns (Category) {}
+  rpc UpdateCategory(UpdateCategoryRequest) returns (UpdateCategoryResponse) {}
+  rpc DeleteCategory(DeleteCategoryRequest) returns (DeleteCategoryResponse) {}
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse) {}
+}
+
+message Category {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message AddCategoryRequest {
+  string token = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message GetCategoryRequest {
+  int32 id = 1;
+}
+
+message UpdateCategoryRequest {
+  string token = 1;
+  int32 id = 2;
+  string name = 3;
+  string description = 4;
+}
+
+message UpdateCategoryResponse {
+  bool success = 1;
+}
+
+message DeleteCategoryRequest {
+  string token = 1;
+  int32 id = 2;
+}
+
+message DeleteCategoryResponse {
+  bool success = 1;
+}
+
+message ListCategoriesRequest {}
+
+message ListCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+message ApiError {
+  int32 code = 1;
+  string message = 2;
+}
