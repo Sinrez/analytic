@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Simple Long-Polling Chat API with 30s Timeout
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /messages:
+    get:
+      summary: Get new messages
+      description: |
+        Get new messages in the chat. The client should wait for the response
+        if there are no new messages available. The server will keep the
+        connection open until a new message arrives or a timeout of 30 seconds
+        occurs. The client needs to call the GET request again every 30 seconds.
+      parameters:
+        - name: lastMessageId
+          in: query
+          description: The ID of the last message received by the client.
+          required: true
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: The maximum time in seconds to wait for a new message.
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: New messages retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '204':
+          description: No new messages available; request timed out.
+        '500':
+          description: Server error.
+    post:
+      summary: Send a message
+      requestBody:
+        description: The message to send
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMessage'
+      responses:
+        '201':
+          description: Message sent successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid request.
+        '500':
+          description: Server error.
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the message.
+        username:
+          type: string
+          description: Username of the sender.
+        content:
+          type: string
+          description: Message content.
+        timestamp:
+          type: string
+          format: date-time
+          description: Time when the message was sent.
+
+    NewMessage:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username of the sender.
+        content:
+          type: string
+          description: Message content.
