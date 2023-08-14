@@ -1,0 +1,44 @@
+asyncapi: '2.1.0'
+id: 'urn:example:chat-api'
+info:
+  title: Simple WebSocket Chat API
+  version: '1.0.0'
+  description: A simple WebSocket chat API.
+servers:
+  production:
+    url: wss://api.example.com/ws
+    protocol: websocket
+channels:
+  /chat:
+    subscribe:
+      operationId: onMessage
+      message:
+        $ref: '#/components/messages/ChatMessage'
+    publish:
+      operationId: sendMessage
+      message:
+        $ref: '#/components/messages/ChatMessage'
+components:
+  messages:
+    ChatMessage:
+      name: ChatMessage
+      title: Chat Message
+      summary: A message sent between chat participants.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          username:
+            type: string
+            description: Username of the sender.
+          content:
+            type: string
+            description: Message content.
+          timestamp:
+            type: string
+            format: date-time
+            description: Time when the message was sent.
+        required:
+          - username
+          - content
+          - timestamp
