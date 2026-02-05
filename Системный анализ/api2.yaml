@@ -1,0 +1,261 @@
+openapi: 3.0.0
+info:
+  title: checkOrders
+  description: API работы с заказами
+  version: "1.0.0"
+  contact:
+    name: API support
+    url: 'https://www.example.com/support'
+    email: support@mail.com
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licences/LICENCE-2.0.html'
+servers:
+  - url: 'https://api.example.com/v1'
+    description: Prod
+  - url: 'https://api-stg.example.com/v1'
+    description: Staging server
+paths:
+  /orders:
+    get:
+      summary: List all actual orders
+      tags:
+        - Orders
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chosenFilters:
+                  $ref: '#/components/schemas/filterByPrice'
+                sorting:
+                  $ref: '#/components/schemas/sorting'
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/orderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create order
+      tags:
+        - Orders
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/orderRequest'
+      parameters:
+        - name: X-Idempotence-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  successStatus:
+                    type: boolean
+                  item:
+                    $ref: '#/components/schemas/orderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /orders/{id}:
+    get:
+      summary: Get order by id
+      tags:
+        - Order
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  successStatus:
+                    type: boolean
+                  item:
+                    $ref: '#/components/schemas/orderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Edit order by id
+      tags:
+        - Order
+      operationId: editById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/orderResponse'
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  successStatus:
+                    type: boolean
+                  item:
+                    $ref: '#/components/schemas/orderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    filterByPrice:
+      type: object
+      properties:
+        lowerPrice:
+          type: integer
+          format: float
+        higherPrice:
+          type: integer
+          format: float
+    sorting:
+      type: string
+      enum:
+        - fromLowPrice
+        - fromHighPrice
+    orderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - fast_delivery
+            - pickup
+            - common_delivery
+        totalPrice:
+          type: integer
+          format: float
+          example: 1650.3
+        address:
+          type: string
+          pattern: "city, street, house number, room number"
+      required:
+        - id
+        - name
+        - type
+        - totalPrice
+        - address
+    orderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - fast_delivery
+            - pickup
+            - common_delivery
+        totalPrice:
+          type: integer
+          format: float
+          example: 1650.3
+        address:
+          type: string
+          pattern: "city, street, house number, room number"
+      required:
+        - name
+        - type
+        - totalPrice
+        - address
+    error:
+      type: object
+      properties:
+        code:
+          type: integer
+          maxLength: 3
+        message:
+          type: string
+      required:
+        - code
+        - message
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/error'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Orders
+  - name: Order
+externalDocs:
+  description: Some external libraries
+  url: "https://github.com/randomlibrary"

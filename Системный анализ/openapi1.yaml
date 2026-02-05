@@ -1,0 +1,33 @@
+openapi: 3.0.0
+info:
+  title: shoping API
+  description: API для магазина
+  version: "1.0.0"
+paths:
+  /products:
+    description: Продуктовый каталог
+    get:
+      summary: Поиск продуктов
+      parameters:
+        - name: free-query
+          description: бесплатный общий запрос всех продуктов из каталога
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: список продуктов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    name:
+                      type: string
+                    price:
+                      type: string
+
+
+
+

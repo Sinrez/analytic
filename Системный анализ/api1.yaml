@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: itemManagementService
+  description: some description
+  version: "1.0.0"
+  contact:
+    name: API support
+    url: 'https://www.example.com/support'
+    email: support@mail.com
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licences/LICENCE-2.0.html'
+servers:
+  - url: 'https://api.example.com/v1'
+    description: Prod
+  - url: 'https://api-stg.example.com/v1'
+    description: Staging server
+paths:
+  /items:
+    get:
+      summary: List all items
+      tags:
+        - Items
+      responses:
+        '200':
+          description: An array of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Creates item
+      tags:
+        - Items
+      operationId: creatItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: Create an item
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /items/{id}:
+    get:
+      summary: Get item by id
+      tags:
+        - Item
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 24123123123
+      responses:
+        '200':
+          description: Get item by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Edit by id
+      tags:
+        - Item
+      operationId: editById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 24123123123
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: Edited item by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete by id
+      tags:
+        - Item
+      operationId: deleteById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 24123123123
+      responses:
+        '200':
+          description: Delete by id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+components:
+  schemas:
+    error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 404
+          maxLength: 3
+        message:
+          type: string
+          example: Description of error response
+      required:
+        - code
+        - message
+    Item:
+      type: object
+      properties:
+        id:
+          type: object
+          format: uint64
+          example: 1232131231
+        name:
+          type: string
+          example: John Doe
+        description:
+          type: string
+        price:
+          type: integer
+          format: float64
+        bonusPoints:
+          type: integer
+        stock:
+          type: integer
+      required:
+        - id
+        - name
+        - price
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Items
+    description: API endpoint related to create and list items
+  - name: Item
+    description: API endpoint for getting item by its id
+externalDocs:
+  description: Find out more about this API
+  url: 'https://example.com/api-documentation'
